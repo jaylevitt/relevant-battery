@@ -2,14 +2,43 @@
 require 'rubygems'
 require 'plist'
 
-suis = "/Users/jay/Library/Preferences/com.apple.systemuiserver.plist"
+# TODO: Package this up into a gem.
+def main
 
-if `file #{suis}` =~ /Apple binary property list/
-  `plutil -convert xml1 #{suis}`
+  loop do
+    if `pmset -g ps` =~ /drawing from 'AC Power'/
+      want = :hidden
+    else
+      want = :visible
+    end
+  
+    adjust_battery_icon(want)
+    sleep 60
+  end
 end
 
-list = Plist::parse_xml(suis)
-list["menuExtras"].reject!{|i| i =~ /Battery.menu/}
-list.save_plist(suis)
+def adjust_battery_icon(desired_state)
+  prefs = "/Users/jay/Library/Preferences/com.apple.systemuiserver.plist"
+  battery_menu = "/System/Library/CoreServices/Menu Extras/Battery.menu"
+  
+  if `file #{prefs}` =~ /Apple binary property list/
+    `plutil -convert xml1 #{prefs}`
+  end
 
-`killall SystemUIServer`
+  list = Plist::parse_xml(prefs)
+  current_state = list["menuExtras"].include?(battery_menu) ? :visible : :hidden
+  return if current_state == desired_state
+  
+  # Big honking race condition right here if someone else modifies the file at the same time.  Oh, for sensible file locking.
+  
+  if desired_state == :visible
+    list["menuExtras"] << battery_menu
+  else
+    list["menuExtras"].reject!{|i| i =~ /Battery.menu/}
+  end
+  
+  list.save_plist(prefs)
+  `killall SystemUIServer`
+end
+
+main
