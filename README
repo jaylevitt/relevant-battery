@@ -1,0 +1,15 @@
+Keep your menu bar clean; who needs an icon to let you know your power cord is plugged in? Yet it IS useful to know the battery status if you're running on battery.
+
+relevant-battery solves that problem.  Right now, it's just a script you have to run.  Soon, it'll be a nice gem with a launchd.plist.
+
+PREREQUISITES
+
+sudo gem install plist
+
+INSTALL
+
+Not yet.
+
+USAGE
+
+./relevant-battery.rb
