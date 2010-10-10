@@ -8,11 +8,15 @@ sudo gem install plist
 
 INSTALL
 
-Not yet.
+sudo cp relevant-battery /usr/local/bin
+cp fm.jay.relevantbattery.plist ~/Library/LaunchAgents
+touch ~/Library/Logs/relevant-battery.log
+launchctl load ~/Library/LaunchAgents/fm.jay.relevantbattery.plist
+launchctl start fm.jay.relevantbattery
 
 USAGE
 
-./relevant-battery.rb
+It runs automatically from launchd, and will automatically relaunch at your next login.
 
 LICENSE
 
