@@ -7,10 +7,13 @@ require 'plist'
 def main
 
   loop do
-    if `pmset -g ps` =~ /drawing from 'AC Power'/
-      want = :hidden
-    else
+    case `pmset -g ps`
+    when /Currently drawing from 'Battery Power'/
       want = :visible
+    when / charging/ 
+      want = :visible
+    else 
+      want = :hidden
     end
   
     adjust_battery_icon(want)
